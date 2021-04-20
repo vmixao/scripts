@@ -7,6 +7,9 @@ Input: tab delimited table with the following columns:
 
 NOTE: DATE FORMAT REQUIRED DD/MM/YYYY
 
+Launch the script:
+python3 get_summary_table.py input.tsv output.tsv
+
 By Veronica Mixao 
 @INSA
 vmixao@gmail.com
