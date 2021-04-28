@@ -9,7 +9,7 @@ Input: tab delimited table with the following columns:
 By Veronica Mixao 
 @INSA
 vmixao@gmail.com
-Last modified: 20/04/2021
+Last modified: 28/04/2021
 """
 
 import argparse
@@ -29,9 +29,10 @@ def summary_mutations(infile, outfile, outformat):
 
 	data = pandas.read_table(filename)
 	data_out = {"lineage": [], "n_sequences": []}
-
 	lineages = data["Lineage"].values.tolist()
-
+	
+	order_mutations = ["lineage", "n_sequences"]
+	
 	for lin in set(lineages):
 		flt_data = data[data.Lineage == lin] #filter the dataframe
 		if len(flt_data.SAMPLE_ID.unique()) != len(flt_data.Lineage): #compare number of unique sequences with the number of lines
@@ -49,9 +50,10 @@ def summary_mutations(infile, outfile, outformat):
 				counter = flt_data[col].sum()
 				if col not in data_out.keys():
 					data_out[col] = []
+					order_mutations.append(col)
 				data_out[col].append(counter)
 
-	new_data = pandas.DataFrame(data = data_out)
+	new_data = pandas.DataFrame(data = data_out, columns = order_mutations)
 	
 	if outformat == "0":
 		out = new_data.sort_values(by=["n_sequences"], ascending=False) #modify according to the sorting parameter
@@ -64,3 +66,4 @@ def summary_mutations(infile, outfile, outformat):
 			print("Please use a valid output format code!!!!!")
 
 summary_mutations(args.input, args.output, args.format)
+
