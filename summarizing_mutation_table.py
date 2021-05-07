@@ -1,4 +1,4 @@
-#/usr/bin	python
+#!/usr/bin/env	python
 
 """
 Pipeline: This script is used to generate the summary table of all mutations observed in the samples
