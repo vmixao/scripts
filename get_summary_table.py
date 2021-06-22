@@ -13,8 +13,6 @@ python3 get_summary_table.py input.tsv output.tsv
 By Veronica Mixao 
 @INSA
 vmixao@gmail.com
-
-Last modified: 13/04/2021
 """
 
 import pandas
