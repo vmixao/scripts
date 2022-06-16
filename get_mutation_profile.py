@@ -7,11 +7,14 @@ By Veronica Mixao
 @INSA
 """
 
+import os
 import sys
+from shutil import which
 import argparse
 import textwrap
 from Bio import SeqIO, AlignIO
 import pandas
+
 
 # functions	----------
 
@@ -289,5 +292,12 @@ if __name__ == "__main__":
 	
 	print("Get summary of the detected profiles of interest.")
 	summary(mx, args.output)
+	
+	# generate snipit plot
+	
+	if len(sequences) > 1 and "sample" in mx.columns:
+		if which("snipit") is not None:
+			print("Running snipit (https://github.com/aineniamh/snipit)...")
+			os.system("snipit " + args.fasta + " -r " + args.ref + " -o " + args.output)
 	
 	print("Done!")
