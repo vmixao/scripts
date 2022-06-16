@@ -236,6 +236,8 @@ if __name__ == "__main__":
 									Given a list of mutations and a fasta sequence, obtain a table with the 
 									respective mutation profile.
 									
+									If you provide a multiple sequence alignment it will run snipit to generate a
+									figure for mutation visualization (https://github.com/aineniamh/snipit).
 									-----------------------------------------------------------------------------"""))
 	
 	group0 = parser.add_argument_group("Mutation profile", "Provide input/output specifications")
@@ -295,7 +297,7 @@ if __name__ == "__main__":
 	
 	# generate snipit plot
 	
-	if len(sequences) > 1 and "sample" in mx.columns:
+	if len(sequences) > 1:
 		if which("snipit") is not None:
 			print("Running snipit (https://github.com/aineniamh/snipit)...")
 			os.system("snipit " + args.fasta + " -r " + args.ref + " -o " + args.output)
