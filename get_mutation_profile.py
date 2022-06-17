@@ -183,21 +183,25 @@ def summary(mx, out):
 				data2report["motif_ref"].append(data["motif_ref"].values.tolist()[0])
 				
 				for parameter in keys:
-					observations = data[parameter].values.tolist()
-					counter = {}
-					for obs in set(observations):
-						counter[obs] = observations.count(obs)
-						info2report = []
-						if len(counter.keys()) > 0:
-							for v in sorted(counter, key=counter.get, reverse=True):
-								rel_freq = float(counter[v]/len(observations))
-								statistics = str(v) + " (" + str(round(rel_freq * 100,1)) + "%)" 
-								info2report.append(statistics)
-							joint = ", ".join(info2report) + " (n = " + str(len(observations)) + ")"
-						else:
-							joint = " - "
-					data2report[parameter].append(joint)
-					checked.append(mut)
+					if parameter in data.columns:
+						observations = data[parameter].values.tolist()
+						counter = {}
+						for obs in set(observations):
+							counter[obs] = observations.count(obs)
+							info2report = []
+							if len(counter.keys()) > 0:
+								for v in sorted(counter, key=counter.get, reverse=True):
+									rel_freq = float(counter[v]/len(observations))
+									statistics = str(v) + " (" + str(round(rel_freq * 100,1)) + "%)" 
+									info2report.append(statistics)
+								joint = ", ".join(info2report) + " (n = " + str(len(observations)) + ")"
+							else:
+								joint = " - "
+						data2report[parameter].append(joint)
+				
+					else:
+						data2report[parameter].append("-")
+				checked.append(mut)	
 		
 		data2report_df = pandas.DataFrame(data2report)
 		data2report_df.to_csv(out + "_report.tsv", index = False, header=True, sep ="\t")
@@ -233,11 +237,46 @@ if __name__ == "__main__":
 									#                                                                             #
 									###############################################################################  
 									                            
-									Given a list of mutations and a fasta sequence, obtain a table with the 
-									respective mutation profile.
+									This script was developed to rapidly obtain the sequence context flanking
+									SNPs of interest and determine their mutational profile/signature (e.g.
+									APOBEC3-mediated viral genome editing).
 									
-									If you provide a multiple sequence alignment it will run snipit to generate a
-									figure for mutation visualization (https://github.com/aineniamh/snipit).
+									This script can be run by providing different combinations of inputs
+									
+									OPTION1
+									
+									Input 1: Single-column file with a list of 1-indexed reference positions of 
+									interest
+									Input 2: Multiple Sequence Alignment including the reference genome
+									
+									Output 1: TSV file with the mutation context and profile for each sample present 
+									in the alignment
+									Output 2: TSV file with a summary report for each mutation including the
+									different patterns observed and their respective frequency
+									
+									
+									OPTION2
+									
+									Input 1: TSV file with the columns POS REF ALT (i.e. 1-indexed reference position,
+									reference allele and alternative allele)
+									Input 2: Fasta file including the reference genome
+									
+									Output 1: TSV file with the mutation context and profile
+									
+									
+									OPTION 3
+									
+									Input 1: TSV file with the columns ID POS REF ALT (i.e. sample ID, 1-indexed 
+									reference position, reference allele and alternative allele)
+									Input 2: Fasta file including the reference genome
+									
+									Output 1: TSV file with the mutation context and profile for each sample present 
+									in the alignment
+									Output 2: TSV file with a summary report for each mutation including the
+									different patterns observed and their respective frequency
+									
+									NOTE: IN OPTIONS 2 AND 3, THE ORDER OF THE COLUMNS IN THE INPUT 1 IS NOT
+									IMPORTANT, BUT THEIR NAME IS (ID, POS, REF, ALT)!!!
 									-----------------------------------------------------------------------------"""))
 	
 	group0 = parser.add_argument_group("Mutation profile", "Provide input/output specifications")
@@ -295,11 +334,13 @@ if __name__ == "__main__":
 	print("Get summary of the detected profiles of interest.")
 	summary(mx, args.output)
 	
+	"""
 	# generate snipit plot
 	
 	if len(sequences) > 1:
 		if which("snipit") is not None:
 			print("Running snipit (https://github.com/aineniamh/snipit)...")
 			os.system("snipit " + args.fasta + " -r " + args.ref + " -o " + args.output)
+	"""
 	
 	print("Done!")
